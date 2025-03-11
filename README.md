@@ -14,7 +14,7 @@ myls [DIRECTORY]
 Install [nim](https://nim-lang.org/install.html) compiler, then
 
 ```bash
-git clone myls.git
+git clone https://github.com/MashShinozaki/myls.git
 cd myls
 nim c -d:release myls.nim
 ```
