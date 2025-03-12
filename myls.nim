@@ -124,23 +124,19 @@ proc arrangementOf(elems: seq[Element]): Arrangement =
         max_widths = newSeq[int](num_elems)
     
     while num_rows < num_elems:
-        num_cols = calcNumCols(num_elems, num_rows)
         for col in 0 ..< num_cols:
             max_widths[col] = 0
         
         for row in 0 ..< num_rows:
-            var
-                idx = row
-                col = 0
-            
-            while idx < num_elems:
-                let
-                    elem = elems[idx]
+            for col in 0 ..< num_cols:
+                let idx = row + num_rows * col
+                var width = 0
+
+                if idx < num_elems:
+                    let elem = elems[idx]
                     width = if col == num_cols - 1: elem.width else: elem.width + separator.len
-                
+
                 max_widths[col] = max(width, max_widths[col])
-                idx += num_rows
-                col += 1
         
         var row_width = 0
         for col in 0 ..< num_cols:
@@ -148,6 +144,7 @@ proc arrangementOf(elems: seq[Element]): Arrangement =
         
         if row_width > terminal_width:
             num_rows += 1
+            num_cols = calcNumCols(num_elems, num_rows)
         else:
             break
     
@@ -179,14 +176,14 @@ proc listDown(dir: Path) =
             stdout.styledWriteLine(elem.color, elem.name)
     else:
         for row in 0 ..< arrangement.num_rows:
-            var
-                idx = row
-                col = 0
-            
-            while idx < num_elems:
-                let elem = elems[idx]
+            for col in 0 ..< arrangement.num_cols:
+                let idx = row + arrangement.num_rows * col
+                if idx >= num_elems:
+                    break
 
+                let elem = elems[idx]
                 stdout.styledWrite(elem.color, elem.name)
+
                 if col < arrangement.num_cols - 1:
                     let
                         padding_len = arrangement.max_widths[col] - elem.width - separator.len
@@ -195,9 +192,6 @@ proc listDown(dir: Path) =
 
                     stdout.write(postfix)
 
-                idx += arrangement.num_rows
-                col += 1
-            
             stdout.write("\n")
 
 proc main() =
