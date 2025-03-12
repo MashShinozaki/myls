@@ -16,7 +16,7 @@ type
         width: int
         color: ForegroundColor
     
-    Arrangement = object
+    Arrangement = tuple
         num_rows  : int
         num_cols  : int
         max_widths: seq[int]
@@ -148,14 +148,11 @@ proc arrangementOf(elems: seq[Element]): Arrangement =
         else:
             break
     
-    return Arrangement(
+    return (
         num_rows  : num_rows,
         num_cols  : if num_rows == num_elems: 1 else: num_cols,
         max_widths: max_widths
     )
-
-func isSingleColumn(arrangement: Arrangement): bool =
-    return arrangement.num_cols == 1
 
 proc listDown(dir: Path) =
     if not dirExists(dir):
@@ -169,24 +166,24 @@ proc listDown(dir: Path) =
     if num_elems == 0:
         return
 
-    let arrangement = arrangementOf(elems)
+    let (num_rows, num_cols, max_widths) = arrangementOf(elems)
     
-    if arrangement.isSingleColumn():
+    if num_cols == 1:
         for elem in elems:
             stdout.styledWriteLine(elem.color, elem.name)
     else:
-        for row in 0 ..< arrangement.num_rows:
-            for col in 0 ..< arrangement.num_cols:
-                let idx = row + arrangement.num_rows * col
+        for row in 0 ..< num_rows:
+            for col in 0 ..< num_cols:
+                let idx = row + num_rows * col
                 if idx >= num_elems:
                     break
 
                 let elem = elems[idx]
                 stdout.styledWrite(elem.color, elem.name)
 
-                if col < arrangement.num_cols - 1:
+                if col < num_cols - 1:
                     let
-                        padding_len = arrangement.max_widths[col] - elem.width - separator.len
+                        padding_len = max_widths[col] - elem.width - separator.len
                         padding = padding_char.repeat(padding_len)
                         postfix = padding & separator
 
