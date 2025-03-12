@@ -122,7 +122,7 @@ proc arrangementOf(elems: seq[Element]): Arrangement =
         num_cols = num_elems
         max_widths = newSeq[int](num_elems)
     
-    while num_rows < num_elems:
+    while num_cols > 1:
         for col in 0 ..< num_cols:
             max_widths[col] = 0
         
@@ -149,7 +149,7 @@ proc arrangementOf(elems: seq[Element]): Arrangement =
     
     return (
         num_rows  : num_rows,
-        num_cols  : if num_rows == num_elems: 1 else: num_cols,
+        num_cols  : num_cols,
         max_widths: max_widths
     )
 
