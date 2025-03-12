@@ -107,12 +107,8 @@ proc elementsIn(dir: Path): seq[Element] =
 
 func calcNumCols(num_elems: int, num_rows: int): int =
     let remainder = num_elems mod num_rows
-    return (
-        if remainder == 0:
-            num_elems div num_rows
-        else:
-            (num_elems + num_rows - remainder) div num_rows
-    )
+    let num_full_cols = num_elems div num_rows
+    return if remainder == 0: num_full_cols else: num_full_cols + 1
 
 func calcIndex(row: int, col: int, num_rows: int): int =
     return row + num_rows * col
