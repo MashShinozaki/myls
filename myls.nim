@@ -44,15 +44,6 @@ func getColor(name: string, content_type: ContentType): ForegroundColor =
             of cDir:
                 fgGreen
 
-func calcNumCols(num_elems: int, num_rows: int): int =
-    let remainder = num_elems mod num_rows
-    return (
-        if remainder == 0:
-            num_elems div num_rows
-        else:
-            (num_elems + num_rows - remainder) div num_rows
-    )
-
 func runeWidthOf(rune: Rune): int =
     return case int(rune)
         of 0x2460..0x2473: # Circled numbers
@@ -114,6 +105,18 @@ proc elementsIn(dir: Path): seq[Element] =
     
     return elems
 
+func calcNumCols(num_elems: int, num_rows: int): int =
+    let remainder = num_elems mod num_rows
+    return (
+        if remainder == 0:
+            num_elems div num_rows
+        else:
+            (num_elems + num_rows - remainder) div num_rows
+    )
+
+func calcIndex(row: int, col: int, num_rows: int): int =
+    return row + num_rows * col
+
 proc arrangementOf(elems: seq[Element]): Arrangement =
     let
         terminal_width = terminalWidth()
@@ -129,7 +132,7 @@ proc arrangementOf(elems: seq[Element]): Arrangement =
         
         for row in 0 ..< num_rows:
             for col in 0 ..< num_cols:
-                let idx = row + num_rows * col
+                let idx = calcIndex(row, col, num_rows)
                 var width = 0
 
                 if idx < num_elems:
@@ -174,7 +177,7 @@ proc listDown(dir: Path) =
     else:
         for row in 0 ..< num_rows:
             for col in 0 ..< num_cols:
-                let idx = row + num_rows * col
+                let idx = calcIndex(row, col, num_rows)
                 if idx >= num_elems:
                     break
 
