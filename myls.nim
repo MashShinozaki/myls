@@ -44,7 +44,7 @@ func getColor(name: string, content_type: ContentType): ForegroundColor =
             of cDir:
                 fgGreen
 
-func widthOf(code_point: int): int =
+func widthOnTerminalOf(code_point: int): int =
     return case code_point
         of 0x00..0x7F: # Ascii characters
             1
@@ -76,9 +76,9 @@ func runeWidthOf(rune: Rune): int =
     if rune.isCombining():
         # I don't know how to handle combining characters
         # For now let it be the same as non-combining characters
-        return widthOf(int(rune))
+        return widthOnTerminalOf(int(rune))
     else:
-        return widthOf(int(rune))
+        return widthOnTerminalOf(int(rune))
 
 func stringWidthOf(str: string): int =
     var width = 0
