@@ -44,8 +44,12 @@ func getColor(name: string, content_type: ContentType): ForegroundColor =
             of cDir:
                 fgGreen
 
-func runeWidthOf(rune: Rune): int =
-    return case int(rune)
+func widthOf(code_point: int): int =
+    return case code_point
+        of 0x00..0x7F: # Ascii characters
+            1
+        of 0x80..0x07FF: # UTF-8 Two-Byte Characters
+            1
         of 0x2460..0x2473: # Circled numbers
             1
         of 0x2474..0x2487: # Parenthesized numbers
@@ -64,11 +68,17 @@ func runeWidthOf(rune: Rune): int =
             1
         of 0x24FF: # Additional white on black circled number
             1
-        else:
-            if rune.isCombining() or rune.size() < 3:
-                1
-            else:
-                2
+        else: # Other UTF-8 Multi-Byte Characters
+            # Assuming their widths on terminals are all 2
+            2
+
+func runeWidthOf(rune: Rune): int =
+    if rune.isCombining():
+        # I don't know how to handle combining characters
+        # For now let it be the same as non-combining characters
+        return widthOf(int(rune))
+    else:
+        return widthOf(int(rune))
 
 func stringWidthOf(str: string): int =
     var width = 0
